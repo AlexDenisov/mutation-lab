@@ -1,6 +1,8 @@
 ## Taking notes while experimenting
 
-All commands start at root directory
+All commands start at root directory.
+
+Artefacts are compressed to save some space (~150MB vs ~1GB)
 
 ### Get compilation_database.json
 
