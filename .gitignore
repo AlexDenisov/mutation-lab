@@ -4,3 +4,4 @@ build/
 artefacts/bc/
 artefacts/ll/
 
+local_config.yaml

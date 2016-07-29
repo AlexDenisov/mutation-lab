@@ -89,3 +89,12 @@ echo "bitcode_files:" > config.yaml
 ls artefacts/bc/ | sed 's/\(.*\)/  - artefacts\/bc\/\1/' >> config.yaml
 ```
 
+### Making machine dependent config
+
+http://stackoverflow.com/a/584926/829116
+
+```
+echo "bitcode_files:" > local_config.yaml
+ls artefacts/bc/ | sed 's@\(.*\)@  - '"$PWD"'/artefacts/bc/\1@' >> local_config.yaml
+```
+
