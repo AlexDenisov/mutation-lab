@@ -1,3 +1,7 @@
+## Taking notes while experimenting
+
+All commands start at root directory
+
 ### Get compilation_database.json
 
 ```
@@ -74,5 +78,12 @@ cd build
 bash
 while read -r line; do cp $line .././artefacts/bc; done < ./bc_files.list
 while read -r line; do cp $line .././artefacts/ll; done < ./ll_files.list
+```
+
+### Making config
+
+```
+echo "bitcode_files:" > config.yaml
+ls artefacts/bc/ | sed 's/\(.*\)/  - artefacts\/bc\/\1/' >> config.yaml
 ```
 
