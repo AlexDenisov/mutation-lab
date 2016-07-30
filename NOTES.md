@@ -33,17 +33,30 @@ ninja -t commands ADTTests | awk '/^\/Applications/ { print $NF } '
 ninja -t commands ADTTests | grep -v "^:" | sed 's/\(-o .*\)\.o/\1.ll/'
 ```
 
-### Patch commands to replace output file name and add `-S -emit-llvm`
+### Patch commands
+
+Fixing name (.o -> .ll | .bc)
+Replacing compiler with custom one
+Adding required flags ([-S] -emit-llvm)
 
 ```
-ninja -t commands ADTTests | grep -v "^:" | sed -e 's/\(-o .*\)\.o/\1.ll/' -e 's/$/ -S -emit-llvm/'
+ninja -t commands ADTTests | grep -v "^:" | sed -e 's/\(-o .*\)\.o/\1.ll/' \
+                                              -e 's/\(\/App.*\)$/\1 -S -emit-llvm/' \
+                                              -e 's|/Applications/.*/c++|/opt/clang/bin/clang++|'
+
+ninja -t commands ADTTests | grep -v "^:" | sed -e 's/\(-o .*\)\.o/\1.bc/' \
+                                              -e 's/\(\/App.*\)$/\1 -emit-llvm/' \
+                                              -e 's|/Applications/.*/c++|/opt/clang/bin/clang++|'
 ```
 
 ### Evaluate patched commands (human readable LLVM IR)
 
 ```
 mkdir -p unittests/ADT/CMakeFiles/ADTTests.dir
-ninja -t commands ADTTests | grep -v "^:" | sed -e 's/\(-o .*\)\.o/\1.ll/' -e 's/\(\/App.*\)$/\1 -S -emit-llvm/' > commands_ll.sh
+ninja -t commands ADTTests | grep -v "^:" | sed -e 's/\(-o .*\)\.o/\1.ll/' \
+                                              -e 's/\(\/App.*\)$/\1 -S -emit-llvm/' \
+                                              -e 's|/Applications/.*/c++|/opt/clang/bin/clang++|' \
+                                              > commands_ll.sh
 sh commands_ll.sh
 ```
 
@@ -51,7 +64,10 @@ sh commands_ll.sh
 
 ```
 mkdir -p unittests/ADT/CMakeFiles/ADTTests.dir
-ninja -t commands ADTTests | grep -v "^:" | sed -e 's/\(-o .*\)\.o/\1.bc/' -e 's/\(\/App.*\)$/\1 -emit-llvm/' > commands_bc.sh
+ninja -t commands ADTTests | grep -v "^:" | sed -e 's/\(-o .*\)\.o/\1.bc/' \
+                                              -e 's/\(\/App.*\)$/\1 -emit-llvm/' \
+                                              -e 's|/Applications/.*/c++|/opt/clang/bin/clang++|' \
+                                              > commands_bc.sh
 sh commands_bc.sh
 ```
 
