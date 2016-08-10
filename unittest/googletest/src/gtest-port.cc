@@ -147,6 +147,7 @@ void RE::Init(const char* regex) {
 
   // Reserves enough bytes to hold the regular expression used for a
   // full match.
+  printf("%s:%d\n", __FILE__, __LINE__);
   const size_t full_regex_len = strlen(regex) + 10;
   char* const full_pattern = new char[full_regex_len];
 
@@ -400,7 +401,7 @@ void RE::Init(const char* regex) {
     // No need to calculate the full pattern when the regex is invalid.
     return;
   }
-
+  printf("%s:%d\n", __FILE__, __LINE__);
   const size_t len = strlen(regex);
   // Reserves enough bytes to hold the regular expression used for a
   // full match: we need space to prepend a '^', append a '$', and

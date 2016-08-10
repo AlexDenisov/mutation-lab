@@ -262,6 +262,7 @@ void DeathTestAbort(const String& message) {
 
 // Returns the message describing the last system error in errno.
 String GetLastErrnoDescription() {
+  printf("%s:%d\n", __FILE__, __LINE__);
     return String(errno == 0 ? "" : posix::StrError(errno));
 }
 
@@ -1103,6 +1104,7 @@ DeathTestFactory::~DeathTestFactory() {}
 // ::std::string, so we can use it here.
 static void SplitString(const ::std::string& str, char delimiter,
                         ::std::vector< ::std::string>* dest) {
+  printf("SPLITTtttt\n");
   ::std::vector< ::std::string> parsed;
   ::std::string::size_type pos = 0;
   while (::testing::internal::AlwaysTrue()) {
@@ -1188,14 +1190,19 @@ int GetStatusFileDescriptor(unsigned int parent_process_id,
 // initialized from the GTEST_FLAG(internal_run_death_test) flag if
 // the flag is specified; otherwise returns NULL.
 InternalRunDeathTestFlag* ParseInternalRunDeathTestFlag() {
-  if (GTEST_FLAG(internal_run_death_test) == "") return NULL;
+  printf("ParseInternal begin\n");
+  if (GTEST_FLAG(internal_run_death_test) == "" || GTEST_FLAG(internal_run_death_test) == NULL) return NULL;
 
   // GTEST_HAS_DEATH_TEST implies that we have ::std::string, so we
   // can use it here.
   int line = -1;
   int index = -1;
   ::std::vector< ::std::string> fields;
-  SplitString(GTEST_FLAG(internal_run_death_test).c_str(), '|', &fields);
+  printf("SplitString true begin\n");
+  const char *s = GTEST_FLAG(internal_run_death_test).c_str();
+  printf("SplitString begin %s\n", s);
+  SplitString(s, '|', &fields);
+  printf("SplintString end\n");
   int write_fd = -1;
 
 # if GTEST_OS_WINDOWS
@@ -1229,6 +1236,7 @@ InternalRunDeathTestFlag* ParseInternalRunDeathTestFlag() {
   }
 
 # endif  // GTEST_OS_WINDOWS
+  printf("ParseInternal end\n");
 
   return new InternalRunDeathTestFlag(fields[0], line, index, write_fd);
 }

@@ -847,6 +847,7 @@ static char* CloneString(const char* str, size_t length) {
 // caller is responsible for deleting[] the return value.  Returns the
 // cloned string, or NULL if the input is NULL.
 const char * String::CloneCString(const char* c_str) {
+        printf("%s:%d\n", __FILE__, __LINE__);
   return (c_str == NULL) ?
                     NULL : CloneString(c_str, strlen(c_str));
 }
@@ -858,6 +859,7 @@ const char * String::CloneCString(const char* c_str) {
 // input is NULL.
 LPCWSTR String::AnsiToUtf16(const char* ansi) {
   if (!ansi) return NULL;
+  printf("%s:%d\n", __FILE__, __LINE__);
   const int length = strlen(ansi);
   const int unicode_length =
       MultiByteToWideChar(CP_ACP, 0, ansi, length,
@@ -1667,8 +1669,9 @@ bool String::EndsWith(const char* suffix) const {
   if (suffix == NULL || CStringEquals(suffix, "")) return true;
 
   if (c_str() == NULL) return false;
-
+  printf("%s:%d\n", __FILE__, __LINE__);
   const size_t this_len = strlen(c_str());
+  printf("%s:%d\n", __FILE__, __LINE__);
   const size_t suffix_len = strlen(suffix);
   return (this_len >= suffix_len) &&
          CStringEquals(c_str() + this_len - suffix_len, suffix);
@@ -1680,8 +1683,9 @@ bool String::EndsWithCaseInsensitive(const char* suffix) const {
   if (suffix == NULL || CStringEquals(suffix, "")) return true;
 
   if (c_str() == NULL) return false;
-
+  printf("%s:%d\n", __FILE__, __LINE__);
   const size_t this_len = strlen(c_str());
+  printf("%s:%d\n", __FILE__, __LINE__);
   const size_t suffix_len = strlen(suffix);
   return (this_len >= suffix_len) &&
          CaseInsensitiveCStringEquals(c_str() + this_len - suffix_len, suffix);
@@ -3182,6 +3186,7 @@ void XmlUnitTestResultPrinter::OutputXmlCDataSection(::std::ostream* stream,
       stream->write(
           segment, static_cast<std::streamsize>(next_segment - segment));
       *stream << "]]>]]&gt;<![CDATA[";
+      printf("%s:%d\n", __FILE__, __LINE__);
       segment = next_segment + strlen("]]>");
     } else {
       *stream << segment;
@@ -3413,6 +3418,7 @@ class StreamingListener : public EmptyTestEventListener {
 // arbitrarily long test failure message and stack trace.
 string StreamingListener::UrlEncode(const char* str) {
   string result;
+  printf("%s:%d\n", __FILE__, __LINE__);
   result.reserve(strlen(str) + 1);
   for (char ch = *str; ch != '\0'; ch = *++str) {
     switch (ch) {
@@ -4003,29 +4009,38 @@ void UnitTestImpl::ConfigureStreamingOutput() {
 // this function is also called from RunAllTests.  Since this function can be
 // called more than once, it has to be idempotent.
 void UnitTestImpl::PostFlagParsingInit() {
+  printf("PostFlagParsingInit\n");
   // Ensures that this function does not execute more than once.
   if (!post_flag_parse_init_performed_) {
     post_flag_parse_init_performed_ = true;
 
 #if GTEST_HAS_DEATH_TEST
+    printf("has death test\n");
     InitDeathTestSubprocessControlInfo();
+    printf("mid has death test\n");
     SuppressTestEventsIfInSubprocess();
+    printf("end has death test\n");
 #endif  // GTEST_HAS_DEATH_TEST
 
     // Registers parameterized tests. This makes parameterized tests
     // available to the UnitTest reflection API without running
     // RUN_ALL_TESTS.
+    printf("before register\n");
     RegisterParameterizedTests();
+    printf("after register\n");
 
     // Configures listeners for XML output. This makes it possible for users
     // to shut down the default XML output before invoking RUN_ALL_TESTS.
+    printf("before configXMLOuut\n");
     ConfigureXmlOutput();
+    printf("before configXMLOuut\n");
 
 #if GTEST_CAN_STREAM_RESULTS_
     // Configures listeners for streaming test results to the specified server.
     ConfigureStreamingOutput();
 #endif  // GTEST_CAN_STREAM_RESULTS_
   }
+  printf("PostFlagParsingInit::end\n");
 }
 
 // A predicate that checks the name of a TestCase against a known
@@ -4127,12 +4142,16 @@ bool UnitTestImpl::RunAllTests() {
 
   // Repeats the call to the post-flag parsing initialization in case the
   // user didn't call InitGoogleTest.
+  printf("before post flag\n");
   PostFlagParsingInit();
+  printf("after post flag\n");
 
   // Even if sharding is not on, test runners may want to use the
   // GTEST_SHARD_STATUS_FILE to query whether the test supports the sharding
   // protocol.
+  printf("before write to shard\n");
   internal::WriteToShardStatusFileIfNeeded();
+  printf("after write to shard\n");
 
   // True iff we are in a subprocess for running a thread-safe-style
   // death test.
@@ -4204,7 +4223,9 @@ bool UnitTestImpl::RunAllTests() {
       if (!Test::HasFatalFailure()) {
         for (int test_index = 0; test_index < total_test_case_count();
              test_index++) {
+          printf("before MutableTestCase::Run\n");
           GetMutableTestCase(test_index)->Run();
+          printf("after MutableTestCase::Run\n");
         }
       }
 
@@ -4514,6 +4535,7 @@ bool AlwaysTrue() {
 // past the prefix and returns true; otherwise leaves *pstr unchanged
 // and returns false.  None of pstr, *pstr, and prefix can be NULL.
 bool SkipPrefix(const char* prefix, const char** pstr) {
+        printf("%s:%d\n", __FILE__, __LINE__);
   const size_t prefix_len = strlen(prefix);
   if (strncmp(*pstr, prefix, prefix_len) == 0) {
     *pstr += prefix_len;
@@ -4741,6 +4763,7 @@ static const char kColorEncodedHelpMessage[] =
 template <typename CharType>
 void ParseGoogleTestFlagsOnlyImpl(int* argc, CharType** argv) {
   for (int i = 1; i < *argc; i++) {
+    printf("%d %s\n", i, argv[i]);
     const String arg_string = StreamableToString(argv[i]);
     const char* const arg = arg_string.c_str();
 

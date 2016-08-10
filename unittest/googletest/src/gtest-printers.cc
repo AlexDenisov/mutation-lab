@@ -305,6 +305,7 @@ void PrintTo(const char* s, ostream* os) {
     *os << "NULL";
   } else {
     *os << ImplicitCast_<const void*>(s) << " pointing to ";
+    printf("%s:%d\n", __FILE__, __LINE__);
     PrintCharsAsStringTo(s, strlen(s), os);
   }
 }

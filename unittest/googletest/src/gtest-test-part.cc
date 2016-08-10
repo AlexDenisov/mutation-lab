@@ -50,6 +50,7 @@ using internal::GetUnitTestImpl;
 // in it.
 internal::String TestPartResult::ExtractSummary(const char* message) {
   const char* const stack_trace = strstr(message, internal::kStackTraceMarker);
+  printf("%s:%d\n", __FILE__, __LINE__);
   return stack_trace == NULL ? internal::String(message) :
       internal::String(message, stack_trace - message);
 }

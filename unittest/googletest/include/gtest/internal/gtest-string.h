@@ -1,3 +1,6 @@
+#include <execinfo.h>
+#include <stdio.h>
+
 // Copyright 2005, Google Inc.
 // All rights reserved.
 //
@@ -197,6 +200,15 @@ class GTEST_API_ String {
       c_str_ = NULL;
       length_ = 0;
     } else {
+
+/*        void* callstack[128]; */
+/*        int i, frames = backtrace(callstack, 128); */
+/*        char** strs = backtrace_symbols(callstack, frames); */
+/*        for (i = 0; i < frames; ++i) { */
+/*          printf("%s\n", strs[i]); */
+/*        } */
+/*        free(strs); */
+
       ConstructNonNull(a_c_str, strlen(a_c_str));
     }
   }

@@ -158,6 +158,7 @@ FilePath FilePath::RemoveFileName() const {
   const char* const last_sep = FindLastPathSeparator();
   String dir;
   if (last_sep) {
+  printf("%s:%d\n", __FILE__, __LINE__);
     dir = String(c_str(), last_sep + 1 - c_str());
   } else {
     dir = kCurrentDirectoryString;
@@ -335,6 +336,8 @@ bool FilePath::CreateFolder() const {
 // name, otherwise return the name string unmodified.
 // On Windows platform, uses \ as the separator, other platforms use /.
 FilePath FilePath::RemoveTrailingPathSeparator() const {
+  printf("%s:%d\n", __FILE__, __LINE__);
+
   return IsDirectory()
       ? FilePath(String(pathname_.c_str(), pathname_.length() - 1))
       : *this;
