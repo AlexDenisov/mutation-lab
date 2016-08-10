@@ -114,3 +114,10 @@ echo "bitcode_files:" > local_config.yaml
 ls artefacts/bc/ | sed 's@\(.*\)@  - '"$PWD"'/artefacts/bc/\1@' >> local_config.yaml
 ```
 
+### Build and install custom Clang
+
+```
+cmake -G Ninja -DBUILD_SHARED_LIBS=true -DLLVM_TARGETS_TO_BUILD="X86" -DCMAKE_INSTALL_PREFIX=/opt/clang ../llvm
+cmake --build . --target install
+```
+
