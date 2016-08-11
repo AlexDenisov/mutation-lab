@@ -14,7 +14,7 @@ void *__dso_handle;
 int main(int argc, char **argv) {
   testing::InitGoogleTest(&argc, argv);
 
-  printf("init passed\n");
-
-  return RUN_ALL_TESTS();
+  auto x = RUN_ALL_TESTS();
+  printf("gtest result: %d\n", x);
+  return x;
 }
