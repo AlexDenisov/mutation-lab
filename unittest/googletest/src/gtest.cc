@@ -4211,9 +4211,7 @@ bool UnitTestImpl::RunAllTests() {
       if (!Test::HasFatalFailure()) {
         for (int test_index = 0; test_index < total_test_case_count();
              test_index++) {
-          printf("before MutableTestCase::Run\n");
           GetMutableTestCase(test_index)->Run();
-          printf("after MutableTestCase::Run\n");
         }
       }
 
