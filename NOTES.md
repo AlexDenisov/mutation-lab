@@ -121,3 +121,25 @@ cmake -G Ninja -DBUILD_SHARED_LIBS=true -DLLVM_TARGETS_TO_BUILD="X86" -DCMAKE_IN
 cmake --build . --target install
 ```
 
+### Running mutang-driver on gtest mode
+
+Find this code in `driver.cpp`
+
+```
+#if 0
+  GoogleTestFinder TestFinder;
+  GoogleTestRunner Runner;
+#else
+  SimpleTestFinder TestFinder;
+  SimpleTestRunner Runner;
+#endif
+```
+
+Replace 0 with 1, re-build and run against local_config.yaml
+
+```
+time ./Debug/bin/mutang-driver path/to/local_config.yaml
+```
+
+The debug version will take lots of time so it's recommended to build the driver in Release configuration.
+
