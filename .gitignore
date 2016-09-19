@@ -1,0 +1,11 @@
+Build/
+Build-command-line/
+Build-Translation/
+
+**/DerivedData/**
+
+**/project.xcworkspace/xcshareddata/
+**/xcuserdata/**
+
+*.swp
+
