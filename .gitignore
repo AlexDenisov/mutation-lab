@@ -5,3 +5,5 @@ artefacts/bc/
 artefacts/ll/
 
 local_config.yaml
+integration/test_names.actual.txt
+integration/testee_names.actual.txt
