@@ -1,0 +1,27 @@
+doctype html
+html
+  head
+    title Mutang Report
+    link href="css/bootstrap.css" rel='stylesheet' type='text/css'
+    link href="js/bootstrap.min.js" rel='script' type='text/javascript'
+
+  body
+    div.container
+      h1 Mutang Report
+
+      div.list-group id="top"
+        - for test in tests
+          a.list-group-item href="##{test.slug}"
+            |
+            = test.name
+            span.badge = test.mutations_count
+
+      - for test in tests
+        div.panel.panel-default
+          div.panel-heading
+            h3.panel-title id="#{test.slug}" = test.name
+          div.panel-body
+            = test.content
+          div.panel-footer
+            a href="#top" Top &#8593;
+
