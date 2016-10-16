@@ -13,15 +13,26 @@ html
         - for test in tests
           a.list-group-item href="##{test.slug}"
             |
-            = test.name
+            = test.test_name
             span.badge = test.mutations_count
 
       - for test in tests
-        div.panel.panel-default
+        div.panel.panel-default.panel-primary
           div.panel-heading
-            h3.panel-title id="#{test.slug}" = test.name
+            div.panel-title id="#{test.slug}"
+              |
+              = "#{test.test_name} "
+              span.badge = test.mutations_count
+
           div.panel-body
-            = test.content
+            div.list-group
+            - for mutation in test.mutation_results
+              div.list-group-item
+                h4.list-group-item-heading = mutation.point.mutation_operator
+                p.list-group-item-text = "#{mutation.status} #{mutation.duration}"
+                p.list-group-item-text = "#{mutation.filename}:#{mutation.line}:"
+                div.well.well-sm = mutation.source
+
           div.panel-footer
             a href="#top" Top &#8593;
 
