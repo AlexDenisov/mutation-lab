@@ -30,7 +30,7 @@ private
 end
 
 DataMapper::Logger.new($stdout, :debug)
-DataMapper.setup(:default, "sqlite://#{Dir.pwd}/report_full.db")
+DataMapper.setup(:default, "sqlite://#{Dir.pwd}/ADTTests.db")
 
 class MutationResult
   include DataMapper::Resource
@@ -55,6 +55,28 @@ class MutationResult
     point.line_number
   end
 
+  def column
+    number = point.column_number
+    return 1 if number == 0
+    number
+  end
+
+  def passed?
+    result.status.equal? 2
+  end
+
+  def failed?
+    result.status.equal? 1
+  end
+
+  def crashed?
+    result.status.equal? 4
+  end
+
+  def timed_out?
+    result.status.equal? 3
+  end
+
   def status
     case result.status
     when 1
@@ -75,7 +97,10 @@ class MutationResult
   end
 
   def source
-    SourceManager.instance.source_for_file_at_line filename, line
+    code = SourceManager.instance.source_for_file_at_line filename, line
+    caret = " " * (column - 1)
+    caret[column - 1] = "^"
+    "#{code}#{caret}"
   end
 
   property :test_id, Integer
@@ -99,6 +124,7 @@ class MutationPoint
   property :module_name, String
   property :filename, String
   property :line_number, Integer
+  property :column_number, Integer
 end
 
 class Test
@@ -120,13 +146,33 @@ end
 
 DataMapper.finalize
 
+class Context
+  def initialize
+    @tests = Test.all
+    @mutants = MutationResult.all
+  end
+
+  def tests
+    @tests
+  end
+
+  def mutants
+    @mutants
+  end
+
+  def tests_count
+    tests.count
+  end
+
+  def mutants_count
+    mutants.count
+  end
+
+end
+
 layout = File.read("./layout/index.slim")
-
 l = Slim::Template.new { layout }
-
-tests = Test.all
-
-html = l.render(Object.new, tests: tests)
+html = l.render(Object.new, ctx: Context.new)
 
 f = File.new("./build/index.html", "w")
 f.write(html)

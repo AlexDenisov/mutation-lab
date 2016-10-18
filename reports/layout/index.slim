@@ -3,36 +3,47 @@ html
   head
     title Mutang Report
     link href="css/bootstrap.css" rel='stylesheet' type='text/css'
+    link href="css/custom.css" rel='stylesheet' type='text/css'
     link href="js/bootstrap.min.js" rel='script' type='text/javascript'
 
   body
     div.container
-      h1 Mutang Report
+      div
+        h1 Mutang Report
 
-      div.list-group id="top"
-        - for test in tests
-          a.list-group-item href="##{test.slug}"
-            |
-            = test.test_name
-            span.badge = test.mutations_count
+        div.list-group id="top"
+          div.list-group-item.list-group-item-info
+            | Tests:
+            span.label.label-primary.pull-right = ctx.tests_count
+          div.list-group-item.list-group-item-info
+            | Mutants:
+            span.label.label-primary.pull-right = ctx.mutants_count
 
-      - for test in tests
-        div.panel.panel-default.panel-primary
-          div.panel-heading
-            div.panel-title id="#{test.slug}"
+        div.list-group
+          - for test in ctx.tests
+            a.list-group-item href="##{test.slug}"
               |
-              = "#{test.test_name} "
+              = test.test_name
               span.badge = test.mutations_count
 
-          div.panel-body
-            div.list-group
-            - for mutation in test.mutation_results
-              div.list-group-item
-                h4.list-group-item-heading = mutation.point.mutation_operator
-                p.list-group-item-text = "#{mutation.status} #{mutation.duration}"
-                p.list-group-item-text = "#{mutation.filename}:#{mutation.line}:"
-                div.well.well-sm = mutation.source
+        - for test in ctx.tests
+          div.panel.panel-default.panel-primary
+            div.panel-heading
+              div.panel-title id="#{test.slug}"
+                |
+                = "#{test.test_name} "
+                span.badge = test.mutations_count
 
-          div.panel-footer
-            a href="#top" Top &#8593;
+            div.panel-body
+              div.list-group
+              - for mutation in test.mutation_results
+                div.list-group-item
+                  h4.list-group-item-heading = mutation.point.mutation_operator
+                  p.list-group-item-text = "#{mutation.status} #{mutation.duration}"
+                  p.list-group-item-text = "#{mutation.filename}:#{mutation.line}:"
+                  pre.source-code
+                    = mutation.source
+
+            div.panel-footer
+              a href="#top" Top &#8593;
 
