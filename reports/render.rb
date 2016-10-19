@@ -29,9 +29,6 @@ private
   end
 end
 
-DataMapper::Logger.new($stdout, :debug)
-DataMapper.setup(:default, "sqlite://#{Dir.pwd}/ADTTests.db")
-
 class MutationResult
   include DataMapper::Resource
   storage_names[:default] = "mutation_result"
@@ -61,30 +58,30 @@ class MutationResult
     number
   end
 
-  def passed?
-    result.status.equal? 2
-  end
-
-  def failed?
+  def killed?
     result.status.equal? 1
   end
 
-  def crashed?
-    result.status.equal? 4
+  def survived?
+    result.status.equal? 2
   end
 
   def timed_out?
     result.status.equal? 3
   end
 
+  def crashed?
+    result.status.equal? 4
+  end
+
   def status
     case result.status
     when 1
-      "Failed"
+      "Killed"
     when 2
-      "Passed"
+      "Survived"
     when 3
-      "Timedout"
+      "Timed Out"
     when 4
       "Crashed"
     else
@@ -104,6 +101,7 @@ class MutationResult
   end
 
   property :test_id, Integer
+  property :mutation_distance, Integer
 end
 
 class ExecutionResult
@@ -147,17 +145,12 @@ end
 DataMapper.finalize
 
 class Context
-  def initialize
-    @tests = Test.all
-    @mutants = MutationResult.all
-  end
-
   def tests
-    @tests
+    @tests ||= Test.all
   end
 
   def mutants
-    @mutants
+    @mutants ||= MutationResult.all
   end
 
   def tests_count
@@ -168,13 +161,46 @@ class Context
     mutants.count
   end
 
+  def killed_mutants_count
+    mutants.all(MutationResult.execution_result.status => 1).count
+  end
+
+  def survived_mutants_count
+    mutants.all(MutationResult.execution_result.status => 2).count
+  end
+
+  def timedout_mutants_count
+    mutants.all(MutationResult.execution_result.status => 3).count
+  end
+
+  def crashed_mutants_count
+    mutants.all(MutationResult.execution_result.status => 4).count
+  end
+
+  def minimum_mutation_distance
+    @mutants.min(:mutation_distance)
+  end
+
+  def maximum_mutation_distance
+    @mutants.max(:mutation_distance)
+  end
+
+  def mean_mutation_distance
+    @mutants.avg(:mutation_distance).round(0)
+  end
+
 end
+
+report = $ARGV[0]
+
+DataMapper::Logger.new($stdout, :debug)
+DataMapper.setup(:default, "sqlite://#{Dir.pwd}/../llvm_reports/#{report}.sqlite")
 
 layout = File.read("./layout/index.slim")
 l = Slim::Template.new { layout }
 html = l.render(Object.new, ctx: Context.new)
 
-f = File.new("./build/index.html", "w")
+f = File.new("./build/#{report}.html", "w")
 f.write(html)
 f.close
 
