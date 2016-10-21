@@ -128,13 +128,19 @@ end
 class Test
   include DataMapper::Resource
   storage_names[:default] = 'test'
-  property :rowid,  Serial
+  property :rowid, Serial
 
   property :test_name,   String
   has n, :mutation_results, :child_key => [ :test_id ]
 
+  belongs_to :execution_result, child_key: [ :execution_result_id ]
+
   def mutations_count
     @mutations_count ||= mutation_results.count
+  end
+
+  def duration
+    "#{execution_result.duration}ns"
   end
 
   def slug

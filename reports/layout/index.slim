@@ -104,6 +104,13 @@ html
 
             div.panel-body
               div.list-group
+                div.list-group-item
+                  h4.list-group-item-heading Original Test
+
+                  h4
+                    p
+                      span.label.label-primary = "Duration: #{test.duration}"
+
               - for mutation in test.mutation_results
                 div.list-group-item
                   h4.list-group-item-heading = mutation.point.mutation_operator
