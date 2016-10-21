@@ -48,6 +48,45 @@ html
             | Mean distance:
             span.label.label-primary.pull-right = ctx.mean_mutation_distance
 
+          div.list-group-item
+            | Mutation Score:
+            span.label.label-primary.pull-right = "#{ctx.mutation_score}%"
+
+        h3 Results grouped by Mutation Distance
+
+        div
+          - for distance in ctx.minimum_mutation_distance.upto(ctx.maximum_mutation_distance)
+            div.list-group
+              div.list-group-item
+                | Distance:
+                span.label.label-primary.pull-right = distance
+
+              div.list-group-item
+                | Mutants:
+                span.label.label-primary.pull-right = ctx.mutants_count distance
+
+              div.list-group-item
+                | Killed mutants:
+                span.label.label-success.pull-right = ctx.killed_mutants_count distance
+
+              div.list-group-item
+                | Survived mutants:
+                span.label.label-warning.pull-right = ctx.survived_mutants_count distance
+
+              div.list-group-item
+                | Timed Out mutants:
+                span.label.label-default.pull-right = ctx.timedout_mutants_count distance
+
+              div.list-group-item
+                | Crashed mutants:
+                span.label.label-danger.pull-right = ctx.crashed_mutants_count distance
+
+              div.list-group-item
+                | Mutation Score:
+                span.label.label-primary.pull-right = "#{ctx.mutation_score(distance)}%"
+
+        h3 Mutation Results
+
         div.list-group
           - for test in ctx.tests
             a.list-group-item href="##{test.slug}"

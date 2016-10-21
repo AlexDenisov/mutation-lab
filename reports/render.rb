@@ -157,24 +157,37 @@ class Context
     tests.count
   end
 
-  def mutants_count
-    mutants.count
+  def mutants_count(distance = nil)
+    local = mutants
+    local = local.all(:mutation_distance => distance) unless distance.nil?
+    local.all().count
   end
 
-  def killed_mutants_count
-    mutants.all(MutationResult.execution_result.status => 1).count
+  def filter_mutants(result, distance = nil)
+    local = mutants
+    local = local.all(:mutation_distance => distance) unless distance.nil?
+    local.all(MutationResult.execution_result.status => result)
   end
 
-  def survived_mutants_count
-    mutants.all(MutationResult.execution_result.status => 2).count
+  def killed_mutants_count(distance = nil)
+    filter_mutants(1, distance).count
   end
 
-  def timedout_mutants_count
-    mutants.all(MutationResult.execution_result.status => 3).count
+  def survived_mutants_count(distance = nil)
+    filter_mutants(2, distance).count
   end
 
-  def crashed_mutants_count
-    mutants.all(MutationResult.execution_result.status => 4).count
+  def timedout_mutants_count(distance = nil)
+    filter_mutants(3, distance).count
+  end
+
+  def crashed_mutants_count(distance = nil)
+    filter_mutants(4, distance).count
+  end
+
+  def mutation_score(distance = nil)
+    non_survived_mutants = (crashed_mutants_count(distance) + killed_mutants_count(distance) + timedout_mutants_count(distance)) * 1.0
+    (non_survived_mutants / mutants_count(distance) * 100).round(1)
   end
 
   def minimum_mutation_distance
