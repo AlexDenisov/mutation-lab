@@ -90,7 +90,7 @@ class MutationResult
   end
 
   def duration
-    "#{result.duration}ns"
+    "#{result.duration}ms"
   end
 
   def source
@@ -140,12 +140,44 @@ class Test
   end
 
   def duration
-    "#{execution_result.duration}ns"
+    "#{execution_result.duration}ms"
   end
 
   def slug
     URI.escape(test_name)
   end
+
+  def failed?
+    execution_result.status.equal? 1
+  end
+
+  def passed?
+    execution_result.status.equal? 2
+  end
+
+  def timed_out?
+    execution_result.status.equal? 3
+  end
+
+  def crashed?
+    execution_result.status.equal? 4
+  end
+
+  def status
+    case execution_result.status
+    when 1
+      "Failed"
+    when 2
+      "Passed"
+    when 3
+      "Timed Out"
+    when 4
+      "Crashed"
+    else
+      "unknown"
+    end
+  end
+
 end
 
 DataMapper.finalize

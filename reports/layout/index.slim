@@ -109,6 +109,15 @@ html
 
                   h4
                     p
+                      - if test.failed?
+                        span.label.label-warning = test.status
+                      - if test.passed?
+                        span.label.label-success = test.status
+                      - if test.timed_out?
+                        span.label.label-default = test.status
+                      - if test.crashed?
+                        span.label.label-danger = test.status
+                    p
                       span.label.label-primary = "Duration: #{test.duration}"
 
               - for mutation in test.mutation_results
