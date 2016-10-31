@@ -5,10 +5,12 @@ html
     link href="css/bootstrap.css" rel='stylesheet' type='text/css'
     link href="css/custom.css" rel='stylesheet' type='text/css'
     link href="js/bootstrap.min.js" rel='script' type='text/javascript'
+    link href="js/moment.js" rel='script' type='text/javascript'
 
   body
     div.container
       div
+
         h1 Mutang Report
 
         div.list-group id="top"
@@ -19,6 +21,10 @@ html
           div.list-group-item.list-group-item-info
             | Mutants:
             span.label.label-primary.pull-right = ctx.mutants_count
+
+          div.list-group-item.list-group-item-info
+            | Execution Time:
+            span.label.label-primary.pull-right = ctx.execution_duration
 
           div.list-group-item
             | Killed mutants:
@@ -85,6 +91,10 @@ html
                 | Mutation Score:
                 span.label.label-primary.pull-right = "#{ctx.mutation_score(distance)}%"
 
+              div.list-group-item
+                | Duration:
+                span.label.label-primary.pull-right = "#{ctx.duration_at_distance(distance)}"
+
         h3 Mutation Results
 
         div.list-group
@@ -119,6 +129,8 @@ html
                         span.label.label-danger = test.status
                     p
                       span.label.label-primary = "Duration: #{test.duration}"
+                    p
+                      span.label.label-primary = "Mutations duration: #{test.mutations_duration}"
 
               - for mutation in test.mutation_results
                 div.list-group-item

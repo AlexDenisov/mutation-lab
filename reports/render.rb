@@ -3,6 +3,15 @@ require 'data_mapper'
 require 'slim'
 require 'uri'
 
+def humanize_duration millis
+  [[1000, :ms], [60, :s], [60, :m], [24, :h], [1000, :d]].map{ |count, name|
+    if millis > 0
+      millis, n = millis.divmod(count)
+      "#{n.to_i}#{name}"
+    end
+  }.compact.reverse.join(' ')
+end
+
 class SourceManager
   def initialize
     @files = Hash.new
@@ -90,7 +99,7 @@ class MutationResult
   end
 
   def duration
-    "#{result.duration}ms"
+    humanize_duration result.duration
   end
 
   def source
@@ -137,6 +146,11 @@ class Test
 
   def mutations_count
     @mutations_count ||= mutation_results.count
+  end
+
+  def mutations_duration
+    duration = mutation_results.map(&:result).inject(0) { |sum, result| sum + result.duration}
+    humanize_duration duration
   end
 
   def duration
@@ -226,6 +240,16 @@ class Context
   def mutation_score(distance = nil)
     non_survived_mutants = (crashed_mutants_count(distance) + killed_mutants_count(distance) + timedout_mutants_count(distance)) * 1.0
     (non_survived_mutants / mutants_count(distance) * 100).round(1)
+  end
+
+  def duration_at_distance(distance)
+    duration = mutants.all(:mutation_distance => distance).map(&:result).inject(0) { |value, result| value + result.duration }
+    humanize_duration duration
+  end
+
+  def execution_duration
+    duration = ExecutionResult.all.sum(:duration)
+    humanize_duration duration
   end
 
   def minimum_mutation_distance
