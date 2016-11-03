@@ -132,6 +132,17 @@ html
                     p
                       span.label.label-primary = "Mutations duration: #{test.mutations_duration}"
 
+                  div.list-group
+                    div.list-group-item.list-group-item
+                      | stdout:
+                    div.list-group-item.list-group-item.pre
+                      div.source-code = test.stdout
+
+                    div.list-group-item.list-group-item
+                      | stderr:
+                    div.list-group-item.list-group-item.pre
+                      div.source-code = test.stderr
+
               - for mutation in test.mutation_results
                 div.list-group-item
                   h4.list-group-item-heading = mutation.point.mutation_operator
@@ -146,15 +157,30 @@ html
                         span.label.label-default = mutation.status
                       - if mutation.crashed?
                         span.label.label-danger = mutation.status
+                      - if mutation.dryRun?
+                        span.label.label-info = mutation.status
 
                     p
                       span.label.label-primary = "Distance: #{mutation.mutation_distance}"
                     p
                       span.label.label-primary = "Duration: #{mutation.duration}"
 
-                  p.list-group-item-text = "#{mutation.filename}:#{mutation.line}:"
-                  pre.source-code
-                    = mutation.source
+                  div.list-group
+                    div.list-group-item.list-group-item
+                      | #{mutation.filename}:#{mutation.line}
+                    div.list-group-item.list-group-item.pre
+                      div.source-code = mutation.source
+
+                  div.list-group
+                    div.list-group-item.list-group-item
+                      | stdout:
+                    div.list-group-item.list-group-item.pre
+                      div.source-code = mutation.stdout
+
+                    div.list-group-item.list-group-item
+                      | stderr:
+                    div.list-group-item.list-group-item.pre
+                      div.source-code = mutation.stderr
 
             div.panel-footer
               a href="#top" Top &#8593;

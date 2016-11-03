@@ -83,6 +83,10 @@ class MutationResult
     result.status.equal? 4
   end
 
+  def dryRun?
+    result.status.equal? 5
+  end
+
   def status
     case result.status
     when 1
@@ -93,6 +97,8 @@ class MutationResult
       "Timed Out"
     when 4
       "Crashed"
+    when 4
+      "Dry Run"
     else
       "unknown"
     end
@@ -103,10 +109,22 @@ class MutationResult
   end
 
   def source
+    begin
     code = SourceManager.instance.source_for_file_at_line filename, line
     caret = " " * (column - 1)
     caret[column - 1] = "^"
     "#{code}#{caret}"
+    rescue
+      return "not_found"
+    end
+  end
+
+  def stderr
+    result.stderr
+  end
+
+  def stdout
+    result.stdout
   end
 
   property :test_id, Integer
@@ -120,6 +138,8 @@ class ExecutionResult
 
   property :status, Integer
   property :duration, Integer
+  property :stderr, String
+  property :stdout, String
 end
 
 class MutationPoint
@@ -175,6 +195,14 @@ class Test
 
   def crashed?
     execution_result.status.equal? 4
+  end
+
+  def stderr
+    execution_result.stderr
+  end
+
+  def stdout
+    execution_result.stdout
   end
 
   def status
@@ -243,7 +271,12 @@ class Context
   end
 
   def duration_at_distance(distance)
-    duration = mutants.all(:mutation_distance => distance).map(&:result).inject(0) { |value, result| value + result.duration }
+    duration = mutants.all(:mutation_distance => distance).map(&:result).inject(0) { |value, result|
+      unless result.nil?
+      then value + result.duration
+      else value
+      end
+    }
     humanize_duration duration
   end
 

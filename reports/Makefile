@@ -1,4 +1,4 @@
-.PHONY: build
+.PHONY: build build/css
 
 build/css:
 	mkdir -p build/css
