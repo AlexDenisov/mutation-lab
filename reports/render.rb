@@ -97,7 +97,7 @@ class MutationResult
       "Timed Out"
     when 4
       "Crashed"
-    when 4
+    when 5
       "Dry Run"
     else
       "unknown"
@@ -271,12 +271,7 @@ class Context
   end
 
   def duration_at_distance(distance)
-    duration = mutants.all(:mutation_distance => distance).map(&:result).inject(0) { |value, result|
-      unless result.nil?
-      then value + result.duration
-      else value
-      end
-    }
+    duration = mutants.all(:mutation_distance => distance).map(&:result).inject(0) { |value, result| value + result.duration }
     humanize_duration duration
   end
 
@@ -299,16 +294,18 @@ class Context
 
 end
 
-report = $ARGV[0]
+report_path = $ARGV[0]
+report_name = $ARGV[1]
 
 DataMapper::Logger.new($stdout, :debug)
-DataMapper.setup(:default, "sqlite://#{Dir.pwd}/../llvm_reports/#{report}.sqlite")
+#DataMapper.setup(:default, "sqlite://#{Dir.pwd}/../llvm_reports/#{report}.sqlite")
+DataMapper.setup(:default, "sqlite://#{report_path}")
 
 layout = File.read("./layout/index.slim")
 l = Slim::Template.new { layout }
 html = l.render(Object.new, ctx: Context.new)
 
-f = File.new("./build/#{report}.html", "w")
+f = File.new("./build/#{report_name}.html", "w")
 f.write(html)
 f.close
 
