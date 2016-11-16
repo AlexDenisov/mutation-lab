@@ -154,6 +154,33 @@ class MutationPoint
   property :column_number, Integer
 end
 
+class MutationPointDebug
+  include DataMapper::Resource
+  storage_names[:default] = "mutation_point_debug"
+  property :rowid, Serial
+
+  property :function, String
+  property :basic_block, String
+  property :instruction, String
+  property :unique_id, String
+
+  property :filename, String
+  property :line_number, Integer
+  property :column_number, Integer
+
+  def source
+    begin
+    code = SourceManager.instance.source_for_file_at_line filename, line_number
+    caret = " " * (column_number - 1)
+    caret[column_number - 1] = "^"
+    "#{code}#{caret}"
+    rescue
+      return "not_found"
+    end
+  end
+
+end
+
 class Test
   include DataMapper::Resource
   storage_names[:default] = 'test'
@@ -233,6 +260,10 @@ class Context
     @mutants ||= MutationResult.all
   end
 
+  def debug_mutation_points
+    MutationPointDebug.all
+  end
+
   def tests_count
     tests.count
   end
@@ -301,11 +332,18 @@ DataMapper::Logger.new($stdout, :debug)
 #DataMapper.setup(:default, "sqlite://#{Dir.pwd}/../llvm_reports/#{report}.sqlite")
 DataMapper.setup(:default, "sqlite://#{report_path}")
 
-layout = File.read("./layout/index.slim")
-l = Slim::Template.new { layout }
-html = l.render(Object.new, ctx: Context.new)
+def render(context, layout_name, output)
+  layout = File.read("./layout/#{layout_name}.slim")
+  l = Slim::Template.new { layout }
+  html = l.render(Object.new, ctx: context)
 
-f = File.new("./build/#{report_name}.html", "w")
-f.write(html)
-f.close
+  f = File.new("./build/#{output}.html", "w")
+  f.write(html)
+  f.close
+end
+
+ctx = Context.new
+
+render ctx, "index", report_name
+render ctx, "debug", "#{report_name}_debug"
 

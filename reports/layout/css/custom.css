@@ -4,6 +4,10 @@
   padding: 0 15px;
 }
 
+.debug {
+  max-width: 720px;
+}
+
 .source-code {
   font-family: "Andale Mono";
   /* line-height: 0.8; */

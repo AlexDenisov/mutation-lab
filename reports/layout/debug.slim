@@ -1,0 +1,49 @@
+doctype html
+html
+  head
+    title Mutang Debug
+    link href="css/bootstrap.css" rel='stylesheet' type='text/css'
+    link href="css/custom.css" rel='stylesheet' type='text/css'
+    link href="js/bootstrap.min.js" rel='script' type='text/javascript'
+
+  body
+    div.debug.container
+      div
+
+        h1 Mutang Debug
+
+        div.list-group id="top"
+
+          div.list-group-item.list-group-item-info
+            | Mutation Points:
+            span.label.label-primary.pull-right = ctx.debug_mutation_points.count
+
+        div.panel-body
+          - for point in ctx.debug_mutation_points
+            div.list-group-item
+              h4.list-group-item-heading = point.unique_id
+
+              div.list-group
+                / div.list-group-item.list-group-item
+                /   | function:
+                / div.list-group-item.list-group-item.pre
+                /   div.source-code = point.function
+
+                / div.list-group-item.list-group-item
+                /   | basic block:
+                / div.list-group-item.list-group-item.pre
+                /   div.source-code = point.basic_block
+
+                / div.list-group-item.list-group-item
+                /   | instruction:
+                div.list-group-item.list-group-item.pre
+                  div.source-code = point.instruction
+
+                / div.list-group-item.list-group-item
+                /   | instruction:
+                div.list-group-item.list-group-item.pre
+                  div.source-code = point.source
+
+            div.panel-footer
+              a href="#top" Top &#8593;
+
