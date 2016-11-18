@@ -6,3 +6,4 @@ artefacts/ll/
 
 local_config.yaml
 integration/*.actual.txt
+build_xcode

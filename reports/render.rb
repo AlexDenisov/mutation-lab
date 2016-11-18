@@ -43,6 +43,10 @@ class MutationResult
   storage_names[:default] = "mutation_result"
   property :rowid, Serial
 
+  property :test_id, Integer
+  property :mutation_distance, Integer
+  property :mutation_point_id, String
+
   belongs_to :mutation_point, child_key: [ :mutation_point_id ]
   def point
     @mutation_point ||= mutation_point
@@ -127,8 +131,6 @@ class MutationResult
     result.stdout
   end
 
-  property :test_id, Integer
-  property :mutation_distance, Integer
 end
 
 class ExecutionResult
@@ -152,6 +154,39 @@ class MutationPoint
   property :filename, String
   property :line_number, Integer
   property :column_number, Integer
+  property :unique_id, String
+
+  has n, :mutation_results, :child_key => [ :mutation_point_id ], :parent_key => [ :unique_id ]
+
+  def source
+    begin
+    code = SourceManager.instance.source_for_file_at_line filename, line_number
+    caret = " " * (column_number - 1)
+    caret[column_number - 1] = "^"
+    "#{code}#{caret}"
+    rescue
+      return "not_found"
+    end
+  end
+
+  def tests
+    mutation_results
+  end
+
+  def tests_count
+    @tests_count ||= mutation_results.count
+    @tests_count
+  end
+
+  def failed_tests_count
+    @failed_tests_count ||= mutation_results.count - mutation_results.select(&:survived?).count
+    @failed_tests_count
+  end
+
+  def slug
+    unique_id
+  end
+
 end
 
 class MutationPointDebug
@@ -260,12 +295,20 @@ class Context
     @mutants ||= MutationResult.all
   end
 
+  def mutation_points
+    MutationPoint.all
+  end
+
   def debug_mutation_points
     MutationPointDebug.all
   end
 
   def tests_count
     tests.count
+  end
+
+  def unique_mutants_count
+    MutationPoint.all.count
   end
 
   def mutants_count(distance = nil)

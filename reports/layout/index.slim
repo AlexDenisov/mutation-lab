@@ -22,6 +22,10 @@ html
             span.label.label-primary.pull-right = ctx.mutants_count
 
           div.list-group-item.list-group-item-info
+            | Unique Mutants:
+            span.label.label-primary.pull-right = ctx.unique_mutants_count
+
+          div.list-group-item.list-group-item-info
             | Execution Time:
             span.label.label-primary.pull-right = ctx.execution_duration
 
@@ -57,129 +61,104 @@ html
             | Mutation Score:
             span.label.label-primary.pull-right = "#{ctx.mutation_score}%"
 
-        h3 Results grouped by Mutation Distance
+        / h3 Results grouped by Mutation Distance
 
-        div
-          - for distance in ctx.minimum_mutation_distance.upto(ctx.maximum_mutation_distance)
-            div.list-group
-              div.list-group-item
-                | Distance:
-                span.label.label-primary.pull-right = distance
+        / div
+        /   - for distance in ctx.minimum_mutation_distance.upto(ctx.maximum_mutation_distance)
+        /     div.list-group
+        /       div.list-group-item
+        /         | Distance:
+        /         span.label.label-primary.pull-right = distance
 
-              div.list-group-item
-                | Mutants:
-                span.label.label-primary.pull-right = ctx.mutants_count distance
+        /       div.list-group-item
+        /         | Mutants:
+        /         span.label.label-primary.pull-right = ctx.mutants_count distance
 
-              div.list-group-item
-                | Killed mutants:
-                span.label.label-success.pull-right = ctx.killed_mutants_count distance
+        /       div.list-group-item
+        /         | Killed mutants:
+        /         span.label.label-success.pull-right = ctx.killed_mutants_count distance
 
-              div.list-group-item
-                | Survived mutants:
-                span.label.label-warning.pull-right = ctx.survived_mutants_count distance
+        /       div.list-group-item
+        /         | Survived mutants:
+        /         span.label.label-warning.pull-right = ctx.survived_mutants_count distance
 
-              div.list-group-item
-                | Timed Out mutants:
-                span.label.label-default.pull-right = ctx.timedout_mutants_count distance
+        /       div.list-group-item
+        /         | Timed Out mutants:
+        /         span.label.label-default.pull-right = ctx.timedout_mutants_count distance
 
-              div.list-group-item
-                | Crashed mutants:
-                span.label.label-danger.pull-right = ctx.crashed_mutants_count distance
+        /       div.list-group-item
+        /         | Crashed mutants:
+        /         span.label.label-danger.pull-right = ctx.crashed_mutants_count distance
 
-              div.list-group-item
-                | Mutation Score:
-                span.label.label-primary.pull-right = "#{ctx.mutation_score(distance)}%"
+        /       div.list-group-item
+        /         | Mutation Score:
+        /         span.label.label-primary.pull-right = "#{ctx.mutation_score(distance)}%"
 
-              div.list-group-item
-                | Duration:
-                span.label.label-primary.pull-right = "#{ctx.duration_at_distance(distance)}"
+        /       div.list-group-item
+        /         | Duration:
+        /         span.label.label-primary.pull-right = "#{ctx.duration_at_distance(distance)}"
+
+        h3 Mutation Points
+
+        div.list-group
+          - for point in ctx.mutation_points
+            a.list-group-item href="##{point.slug}"
+              |
+              = point.unique_id
+              - if point.failed_tests_count == 0
+                span.label.label-danger.pull-right = "#{point.failed_tests_count}/#{point.tests_count}"
+              - else
+                - if point.failed_tests_count == point.tests_count
+                  span.label.label-success.pull-right = "#{point.failed_tests_count}/#{point.tests_count}"
+                - else
+                  span.label.label-warning.pull-right = "#{point.failed_tests_count}/#{point.tests_count}"
 
         h3 Mutation Results
 
-        div.list-group
-          - for test in ctx.tests
-            a.list-group-item href="##{test.slug}"
-              |
-              = test.test_name
-              span.badge = test.mutations_count
-
-        - for test in ctx.tests
+        - for point in ctx.mutation_points
           div.panel.panel-default.panel-primary
             div.panel-heading
-              div.panel-title id="#{test.slug}"
+              div.panel-title id="#{point.slug}"
                 |
-                = "#{test.test_name} "
-                span.badge = test.mutations_count
+                = "#{point.unique_id} "
+                span.badge = "#{point.failed_tests_count}/#{point.tests_count}"
+            div.list-group
+              div.list-group-item.list-group-item
+                | #{point.filename}:#{point.line_number}
+              div.list-group-item.list-group-item.pre
+                div.source-code = point.source
 
-            div.panel-body
-              div.list-group
-                div.list-group-item
-                  h4.list-group-item-heading Original Test
+            - for mutation in point.tests
+              div.list-group-item
 
-                  h4
-                    p
-                      - if test.failed?
-                        span.label.label-warning = test.status
-                      - if test.passed?
-                        span.label.label-success = test.status
-                      - if test.timed_out?
-                        span.label.label-default = test.status
-                      - if test.crashed?
-                        span.label.label-danger = test.status
-                    p
-                      span.label.label-primary = "Duration: #{test.duration}"
-                    p
-                      span.label.label-primary = "Mutations duration: #{test.mutations_duration}"
+                h4
+                  p
+                    - if mutation.killed?
+                      span.label.label-success = mutation.status
+                    - if mutation.survived?
+                      span.label.label-warning = mutation.status
+                    - if mutation.timed_out?
+                      span.label.label-default = mutation.status
+                    - if mutation.crashed?
+                      span.label.label-danger = mutation.status
+                    - if mutation.dryRun?
+                      span.label.label-info = mutation.status
 
-                  div.list-group
-                    div.list-group-item.list-group-item
-                      | stdout:
-                    div.list-group-item.list-group-item.pre
-                      div.source-code = test.stdout
+                  p
+                    span.label.label-primary = "Distance: #{mutation.mutation_distance}"
+                  p
+                    span.label.label-primary = "Duration: #{mutation.duration}"
 
-                    div.list-group-item.list-group-item
-                      | stderr:
-                    div.list-group-item.list-group-item.pre
-                      div.source-code = test.stderr
+                div.list-group
+                  div.list-group-item.list-group-item
+                    | stdout:
+                  div.list-group-item.list-group-item.pre
+                    div.source-code = mutation.stdout
 
-              - for mutation in test.mutation_results
-                div.list-group-item
-                  h4.list-group-item-heading = mutation.point.mutation_operator
-
-                  h4
-                    p
-                      - if mutation.killed?
-                        span.label.label-success = mutation.status
-                      - if mutation.survived?
-                        span.label.label-warning = mutation.status
-                      - if mutation.timed_out?
-                        span.label.label-default = mutation.status
-                      - if mutation.crashed?
-                        span.label.label-danger = mutation.status
-                      - if mutation.dryRun?
-                        span.label.label-info = mutation.status
-
-                    p
-                      span.label.label-primary = "Distance: #{mutation.mutation_distance}"
-                    p
-                      span.label.label-primary = "Duration: #{mutation.duration}"
-
-                  div.list-group
-                    div.list-group-item.list-group-item
-                      | #{mutation.filename}:#{mutation.line}
-                    div.list-group-item.list-group-item.pre
-                      div.source-code = mutation.source
-
-                  div.list-group
-                    div.list-group-item.list-group-item
-                      | stdout:
-                    div.list-group-item.list-group-item.pre
-                      div.source-code = mutation.stdout
-
-                    div.list-group-item.list-group-item
-                      | stderr:
-                    div.list-group-item.list-group-item.pre
-                      div.source-code = mutation.stderr
+                  div.list-group-item.list-group-item
+                    | stderr:
+                  div.list-group-item.list-group-item.pre
+                    div.source-code = mutation.stderr
 
             div.panel-footer
               a href="#top" Top &#8593;
