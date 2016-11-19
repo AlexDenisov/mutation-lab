@@ -101,34 +101,34 @@ html
         h3 Mutation Points
 
         div.list-group
-          - for point in ctx.mutation_points
-            a.list-group-item href="##{point.slug}"
+          - for mutant in ctx.n_mutants
+            a.list-group-item href="##{mutant.slug}"
               |
-              = point.unique_id
-              - if point.failed_tests_count == 0
-                span.label.label-danger.pull-right = "#{point.failed_tests_count}/#{point.tests_count}"
+              = mutant.display_name
+              - if mutant.failed_tests_count == 0
+                span.label.label-danger.pull-right = mutant.summary
               - else
-                - if point.failed_tests_count == point.tests_count
-                  span.label.label-success.pull-right = "#{point.failed_tests_count}/#{point.tests_count}"
+                - if mutant.failed_tests_count == mutant.total_tests_count
+                  span.label.label-success.pull-right = mutant.summary
                 - else
-                  span.label.label-warning.pull-right = "#{point.failed_tests_count}/#{point.tests_count}"
+                  span.label.label-warning.pull-right = mutant.summary
 
         h3 Mutation Results
 
-        - for point in ctx.mutation_points
+        - for mutant in ctx.n_mutants
           div.panel.panel-default.panel-primary
             div.panel-heading
-              div.panel-title id="#{point.slug}"
+              div.panel-title id="#{mutant.slug}"
                 |
-                = "#{point.unique_id} "
-                span.badge = "#{point.failed_tests_count}/#{point.tests_count}"
+                = "#{mutant.display_name} "
+                span.badge = mutant.summary
             div.list-group
               div.list-group-item.list-group-item
-                | #{point.filename}:#{point.line_number}
+                | #{mutant.mutation_address}
               div.list-group-item.list-group-item.pre
-                div.source-code = point.source
+                div.source-code = mutant.source
 
-            - for mutation in point.tests
+            - for mutation in mutant.tests
               div.list-group-item
 
                 h4

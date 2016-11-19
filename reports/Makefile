@@ -17,7 +17,7 @@ build/fonts:
 build:
 	bundle exec ruby render.rb $(REPORT) $(REPORT_NAME)
 	open ./build/$(REPORT_NAME).html
-	open ./build/$(REPORT_NAME)_debug.html
+	#open ./build/$(REPORT_NAME)_debug.html
 
 clean:
 	rm -rf build
