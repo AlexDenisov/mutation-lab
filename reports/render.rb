@@ -4,6 +4,7 @@ require 'slim'
 require 'uri'
 
 require './lib/services/source_manager'
+require './lib/services/mutant_sorter'
 
 require './lib/models/execution_result'
 require './lib/models/mutation_point'
@@ -26,7 +27,8 @@ DataMapper.finalize
 
 class Context
   def initialize(mutants)
-    @n_mutants = mutants
+    sorter = MutantSorter.new
+    @n_mutants = sorter.sort(mutants)
   end
 
   def n_mutants

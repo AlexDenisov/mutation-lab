@@ -1,4 +1,4 @@
-require './lib/services/source_manager.rb'
+require './lib/services/source_manager'
 
 class MutantPresenter
   def initialize(point)
@@ -34,17 +34,46 @@ class MutantPresenter
 
   def source
     begin
-    code = SourceManager.instance.source_for_file_at_line filename, line_number
-    caret = " " * (column_number - 1)
-    caret[column_number - 1] = "^"
+    code = SourceManager.instance.source_for_file_at_line @mutation_point.filename, @mutation_point.line_number
+    caret = " " * (@mutation_point.column_number - 1)
+    caret[@mutation_point.column_number - 1] = "^"
     "#{code}#{caret}"
-    rescue
-      return "not_found"
+    rescue Exception => e
+      return "not_found #{e}"
     end
   end
 
   def tests
     @tests
   end
+
+  def killed?
+    @failed_tests_count != 0
+  end
+
+  def survived?
+    @failed_tests_count == 0
+  end
+
+  def weakly_killed?
+    killed? && @failed_tests_count != @total_tests_count
+  end
+
+  def strongly_killed?
+    killed? && @failed_tests_count == @total_tests_count
+  end
+
+  def to_s
+    s = survived? ? 1 : 0
+    wk = weakly_killed? ? 1 : 0
+    sk = strongly_killed? ? 1 : 0
+
+    "{#{s}#{wk}#{sk}}"
+  end
+
+  def inspect
+    to_s
+  end
+
 end
 

@@ -6,13 +6,13 @@ require './lib/presenters/mutant_presenter'
 
 RSpec.describe MutantPresenter do
 
-  let(:failed) {
+  let(:passed_test) {
     result = ExecutionResult.new
     result.status = 2
     result
   }
 
-  let(:passed) {
+  let(:failed_test) {
     result = ExecutionResult.new
     result.status = 1
     result
@@ -20,21 +20,21 @@ RSpec.describe MutantPresenter do
 
   let(:survived_mutation_result) {
     result = MutationResult.new
-    allow(result).to receive(:execution_result).and_return(failed)
+    allow(result).to receive(:execution_result).and_return(passed_test)
     result
   }
 
-  let(:mutation_result) {
+  let(:killed_mutation_result) {
     result = MutationResult.new
-    allow(result).to receive(:execution_result).and_return(passed)
+    allow(result).to receive(:execution_result).and_return(failed_test)
     result
   }
 
   let(:mutation_results) {
-    [ mutation_result, survived_mutation_result, mutation_result ]
+    [ killed_mutation_result, survived_mutation_result, killed_mutation_result ]
   }
 
-  let(:mutation_point) {
+  let(:some_mutation_point) {
     point = MutationPoint.new
 
     point.unique_id = 'unique_identifier'
@@ -46,7 +46,41 @@ RSpec.describe MutantPresenter do
     point
   }
 
-  let(:mutant) { MutantPresenter.new(mutation_point) }
+  let(:weakly_killed) {
+    point = MutationPoint.new
+
+    mutation_results = [ survived_mutation_result, killed_mutation_result, survived_mutation_result ]
+
+    allow(point).to receive(:mutation_results).and_return(mutation_results)
+
+    point
+  }
+
+  let(:weakly_killed_mutant) { MutantPresenter.new(weakly_killed) }
+
+  let(:strongly_killed) {
+    point = MutationPoint.new
+
+    mutation_results = [ killed_mutation_result, killed_mutation_result, killed_mutation_result ]
+
+    allow(point).to receive(:mutation_results).and_return(mutation_results)
+
+    point
+  }
+  let(:strongly_killed_mutant) { MutantPresenter.new(strongly_killed) }
+
+  let(:survived) {
+    point = MutationPoint.new
+
+    mutation_results = [ survived_mutation_result, survived_mutation_result, survived_mutation_result ]
+
+    allow(point).to receive(:mutation_results).and_return(mutation_results)
+
+    point
+  }
+  let(:survived_mutant) { MutantPresenter.new(survived) }
+
+  let(:mutant) { MutantPresenter.new(some_mutation_point) }
 
   it 'slug' do
     expect(mutant.slug).to match('unique_identifier')
@@ -76,6 +110,26 @@ RSpec.describe MutantPresenter do
     expect(mutant.tests.count).to be_equal(3)
   end
 
+  it 'weakly_killed?' do
+    expect(weakly_killed_mutant.killed?).to be_truthy
+    expect(weakly_killed_mutant.weakly_killed?).to be_truthy
+    expect(weakly_killed_mutant.strongly_killed?).to be_falsy
+    expect(weakly_killed_mutant.survived?).to be_falsy
+  end
+
+  it 'strongly_killed?' do
+    expect(strongly_killed_mutant.killed?).to be_truthy
+    expect(strongly_killed_mutant.weakly_killed?).to be_falsy
+    expect(strongly_killed_mutant.strongly_killed?).to be_truthy
+    expect(strongly_killed_mutant.survived?).to be_falsy
+  end
+
+  it 'survived?' do
+    expect(survived_mutant.killed?).to be_falsy
+    expect(survived_mutant.weakly_killed?).to be_falsy
+    expect(survived_mutant.strongly_killed?).to be_falsy
+    expect(survived_mutant.survived?).to be_truthy
+  end
 
 end
 
