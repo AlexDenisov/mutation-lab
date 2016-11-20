@@ -19,31 +19,43 @@ html
 
           div.list-group-item.list-group-item-info
             | Mutants:
-            span.label.label-primary.pull-right = ctx.mutants_count
+            span.label.label-primary.pull-right = ctx.report.mutants.count
 
           div.list-group-item.list-group-item-info
-            | Unique Mutants:
-            span.label.label-primary.pull-right = ctx.unique_mutants_count
+            | Survived Mutants:
+            span.label.label-primary.pull-right = ctx.report.survived_mutants_count
+
+          div.list-group-item.list-group-item-info
+            | Killed Mutants:
+            span.label.label-primary.pull-right = ctx.report.killed_mutants_count
 
           div.list-group-item.list-group-item-info
             | Execution Time:
             span.label.label-primary.pull-right = ctx.execution_duration
 
           div.list-group-item
-            | Killed mutants:
-            span.label.label-success.pull-right = ctx.killed_mutants_count
+            | Weakly Killed Mutants:
+            span.label.label-warning.pull-right = ctx.report.weakly_killed_mutants_count
 
           div.list-group-item
-            | Survived mutants:
-            span.label.label-warning.pull-right = ctx.survived_mutants_count
+            | Strongly Killed Mutants:
+            span.label.label-success.pull-right = ctx.report.strongly_killed_mutants_count
 
-          div.list-group-item
-            | Timed Out mutants:
-            span.label.label-default.pull-right = ctx.timedout_mutants_count
+          / div.list-group-item
+          /   | Killed mutants:
+          /   span.label.label-success.pull-right = ctx.killed_mutants_count
 
-          div.list-group-item
-            | Crashed mutants:
-            span.label.label-danger.pull-right = ctx.crashed_mutants_count
+          / div.list-group-item
+          /   | Survived mutants:
+          /   span.label.label-warning.pull-right = ctx.survived_mutants_count
+
+          / div.list-group-item
+          /   | Timed Out mutants:
+          /   span.label.label-default.pull-right = ctx.timedout_mutants_count
+
+          / div.list-group-item
+          /   | Crashed mutants:
+          /   span.label.label-danger.pull-right = ctx.crashed_mutants_count
 
           div.list-group-item
             | Max distance:
@@ -59,7 +71,7 @@ html
 
           div.list-group-item
             | Mutation Score:
-            span.label.label-primary.pull-right = "#{ctx.mutation_score}%"
+            span.label.label-primary.pull-right = "#{ctx.report.mutation_score}%"
 
         / h3 Results grouped by Mutation Distance
 
@@ -101,7 +113,7 @@ html
         h3 Mutation Points
 
         div.list-group
-          - for mutant in ctx.n_mutants
+          - for mutant in ctx.report.mutants
             a.list-group-item href="##{mutant.slug}"
               |
               = mutant.display_name
@@ -115,7 +127,7 @@ html
 
         h3 Mutation Results
 
-        - for mutant in ctx.n_mutants
+        - for mutant in ctx.report.mutants
           div.panel.panel-default.panel-primary
             div.panel-heading
               div.panel-title id="#{mutant.slug}"

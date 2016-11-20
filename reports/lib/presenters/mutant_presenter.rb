@@ -21,7 +21,9 @@ class MutantPresenter
   end
 
   def display_name
-    @mutation_point.unique_id
+    chunks = @mutation_point.unique_id.split '_'
+    chunks.delete_at(1)
+    chunks.join '_'
   end
 
   def summary

@@ -13,6 +13,7 @@ require './lib/models/mutation_result'
 require './lib/models/test'
 
 require './lib/presenters/mutant_presenter'
+require './lib/presenters/report_presenter'
 
 def humanize_duration millis
   [[1000, :ms], [60, :s], [60, :m], [24, :h], [1000, :d]].map { |count, name|
@@ -27,12 +28,11 @@ DataMapper.finalize
 
 class Context
   def initialize(mutants)
-    sorter = MutantSorter.new
-    @n_mutants = sorter.sort(mutants)
+    @report = ReportPresenter.new(mutants)
   end
 
-  def n_mutants
-    @n_mutants
+  def report
+    @report
   end
 
   def tests
@@ -103,15 +103,15 @@ class Context
   end
 
   def minimum_mutation_distance
-    @mutants.min(:mutation_distance)
+    mutants.min(:mutation_distance)
   end
 
   def maximum_mutation_distance
-    @mutants.max(:mutation_distance)
+    mutants.max(:mutation_distance)
   end
 
   def mean_mutation_distance
-    @mutants.avg(:mutation_distance).round(0)
+    mutants.avg(:mutation_distance).round(0)
   end
 
 end

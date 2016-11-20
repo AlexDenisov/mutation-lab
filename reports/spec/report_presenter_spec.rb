@@ -1,10 +1,11 @@
 require './lib/models/mutation_result'
 require './lib/models/execution_result'
 require './lib/models/mutation_point'
-
 require './lib/presenters/mutant_presenter'
 
-RSpec.describe MutantPresenter do
+require './lib/presenters/report_presenter'
+
+RSpec.describe ReportPresenter do
 
   let(:passed_test) {
     result = ExecutionResult.new
@@ -71,55 +72,26 @@ RSpec.describe MutantPresenter do
   }
   let(:survived_mutant) { MutantPresenter.new(survived) }
 
-  let(:mutant) { MutantPresenter.new(some_mutation_point) }
+  let(:report) { ReportPresenter.new( [survived_mutant, weakly_killed_mutant, strongly_killed_mutant] ) }
 
-  it 'slug' do
-    expect(mutant.slug).to match('DAGDeltaAlgorithmTest_7bb5bd29b15632cb0483fd3edb4aff60_188_2_1_add_mutation_operator')
+  it 'killed_mutants_count' do
+    expect(report.killed_mutants_count).to eq(2)
   end
 
-  it 'display_name' do
-    expect(mutant.display_name).to match('DAGDeltaAlgorithmTest_188_2_1_add_mutation_operator')
+  it 'survived_mutants_count' do
+    expect(report.survived_mutants_count).to eq(1)
   end
 
-  it 'mutation_address' do
-    expect(mutant.mutation_address).to match('fooo.h:42')
+  it 'weakly_killed_mutants_count' do
+    expect(report.weakly_killed_mutants_count).to eq(1)
   end
 
-  it 'total_tests_count' do
-    expect(mutant.total_tests_count).to be_equal(3)
+  it 'strongly_killed_mutants_count' do
+    expect(report.strongly_killed_mutants_count).to eq(1)
   end
 
-  it 'failed_tests_count' do
-    expect(mutant.failed_tests_count).to be_equal(2)
-  end
-
-  it 'summary' do
-    expect(mutant.summary).to match("2/3")
-  end
-
-  it 'tests' do
-    expect(mutant.tests.count).to be_equal(3)
-  end
-
-  it 'weakly_killed?' do
-    expect(weakly_killed_mutant.killed?).to be_truthy
-    expect(weakly_killed_mutant.weakly_killed?).to be_truthy
-    expect(weakly_killed_mutant.strongly_killed?).to be_falsy
-    expect(weakly_killed_mutant.survived?).to be_falsy
-  end
-
-  it 'strongly_killed?' do
-    expect(strongly_killed_mutant.killed?).to be_truthy
-    expect(strongly_killed_mutant.weakly_killed?).to be_falsy
-    expect(strongly_killed_mutant.strongly_killed?).to be_truthy
-    expect(strongly_killed_mutant.survived?).to be_falsy
-  end
-
-  it 'survived?' do
-    expect(survived_mutant.killed?).to be_falsy
-    expect(survived_mutant.weakly_killed?).to be_falsy
-    expect(survived_mutant.strongly_killed?).to be_falsy
-    expect(survived_mutant.survived?).to be_truthy
+  it 'mutation_score' do
+    expect(report.mutation_score).to eq("67%")
   end
 
 end
