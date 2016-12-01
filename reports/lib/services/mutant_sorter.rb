@@ -7,7 +7,7 @@ class MutantSorter
       priority = 1 if m.weakly_killed?
       priority = 2 if m.strongly_killed?
 
-      priority
+      [ priority, m.total_tests_count ]
     end
   end
 

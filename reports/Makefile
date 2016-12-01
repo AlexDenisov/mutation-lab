@@ -1,6 +1,8 @@
-.PHONY: build build/css
+.PHONY: build build/css build/js build/fonts
 
 REPORT_NAME=$(shell basename $(REPORT) | cut -d"." -f1)
+
+all: build/css build/js build/fonts
 
 build/css:
 	mkdir -p build/css
@@ -18,6 +20,9 @@ build:
 	bundle exec ruby render.rb $(REPORT) $(REPORT_NAME)
 	open ./build/$(REPORT_NAME).html
 	#open ./build/$(REPORT_NAME)_debug.html
+
+test:
+	bundle exec rspec
 
 clean:
 	rm -rf build

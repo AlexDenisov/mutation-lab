@@ -4,6 +4,18 @@ All commands start at root directory.
 
 Artefacts are compressed to save some space (~150MB vs ~1GB)
 
+### Get compilation database just for one target
+
+```
+mkdir build
+cd build
+cmake -G Ninja -DLLVM_TARGETS_TO_BUILD="X86" ../llvm
+
+ninja -t compdb (grep -o '\S*COMPILER__ADTTests' rules.ninja)
+# Posix shells
+ninja -t compdb `grep -o '\S*COMPILER__ADTTests' rules.ninja`
+```
+
 ### Get compilation_database.json
 
 ```
