@@ -18,3 +18,8 @@ import mutation_results
 import mutation_points
 import execution_results
 
+mongo --eval "db.execution_results.createIndex({ 'rowid' : 1})"
+mongo --eval "db.mutation_points.createIndex({ 'unique_id' : 1 })"
+mongo --eval "db.mutation_results.createIndex({ 'mutation_point_id' : 1})"
+mongo --eval "db.tests.createIndex({ 'test_name' : 1 })"
+
