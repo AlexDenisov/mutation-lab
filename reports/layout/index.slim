@@ -135,8 +135,8 @@ html
                 = "#{mutant.display_name} "
                 span.badge = mutant.summary
             div.list-group
-              div.list-group-item.list-group-item
-                | #{mutant.call_path}
+              div.list-group-item.list-group-item.pre
+                div.source-code = mutant.call_path
               div.list-group-item.list-group-item
                 | #{mutant.mutation_address}
               div.list-group-item.list-group-item.pre
