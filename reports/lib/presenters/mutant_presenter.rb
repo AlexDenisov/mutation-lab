@@ -34,6 +34,10 @@ class MutantPresenter
     "#{@mutation_point.filename}:#{@mutation_point.line_number}"
   end
 
+  def call_path
+    @mutation_point.__tmp_caller_path
+  end
+
   def source
     begin
     code = SourceManager.instance.source_for_file_at_line @mutation_point.filename, @mutation_point.line_number

@@ -12,6 +12,7 @@ class MutationPoint
   property :line_number, Integer
   property :column_number, Integer
   property :unique_id, String
+  property :__tmp_caller_path, String
 
   has n, :mutation_results, :child_key => [ :mutation_point_id ], :parent_key => [ :unique_id ]
 
