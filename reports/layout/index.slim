@@ -1,7 +1,7 @@
 doctype html
 html
   head
-    title Mutang Report
+    title Mull Report
     link href="css/bootstrap.css" rel='stylesheet' type='text/css'
     link href="css/custom.css" rel='stylesheet' type='text/css'
     link href="js/bootstrap.min.js" rel='script' type='text/javascript'
@@ -10,7 +10,7 @@ html
     div.container
       div
 
-        h1 Mutang Report
+        h1 Mull Report
 
         div.list-group id="top"
           div.list-group-item.list-group-item-info
@@ -135,11 +135,13 @@ html
                 = "#{mutant.display_name} "
                 span.badge = mutant.summary
             div.list-group
-              div.list-group-item.list-group-item.pre
-                div.source-code = mutant.call_path
-              div.list-group-item.list-group-item
+              div.list-group-item
+                h4 = "Test Names:"
+              div.list-group-item.pre
+                div.source-code = mutant.test_names
+              div.list-group-item
                 | #{mutant.mutation_address}
-              div.list-group-item.list-group-item.pre
+              div.list-group-item.pre
                 div.source-code = mutant.source
 
             - for mutation in mutant.tests
@@ -164,14 +166,24 @@ html
                     span.label.label-primary = "Duration: #{mutation.duration}"
 
                 div.list-group
-                  div.list-group-item.list-group-item
+                  div.list-group-item
+                    | Caller path:
+                  div.list-group-item.pre
+                    div.source-code = mutation.caller_path
+
+                  div.list-group-item
+                    | Caller path (source code):
+                  div.list-group-item.pre
+                    div.source-code = mutation.caller_path_source_code
+
+                  div.list-group-item
                     | stdout:
-                  div.list-group-item.list-group-item.pre
+                  div.list-group-item.pre
                     div.source-code = mutation.stdout
 
-                  div.list-group-item.list-group-item
+                  div.list-group-item
                     | stderr:
-                  div.list-group-item.list-group-item.pre
+                  div.list-group-item.pre
                     div.source-code = mutation.stderr
 
             div.panel-footer

@@ -5,6 +5,11 @@ rm -f mutation_results.csv
 rm -f execution_results.csv
 rm -f tests.csv
 
+mongo --eval "db.execution_results.drop()"
+mongo --eval "db.mutation_points.drop()"
+mongo --eval "db.mutation_results.drop()"
+mongo --eval "db.tests.drop()"
+
 sqlite3 $1 < export_report.sql
 
 function import() {

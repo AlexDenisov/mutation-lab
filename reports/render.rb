@@ -119,7 +119,7 @@ end
 report_path = $ARGV[0]
 report_name = $ARGV[1]
 
-DataMapper::Logger.new($stdout, :debug)
+#DataMapper::Logger.new($stdout, :debug)
 DataMapper.setup(:default, "sqlite://#{report_path}")
 
 def render(context, layout_name, output)

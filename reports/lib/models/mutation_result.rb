@@ -6,9 +6,10 @@ class MutationResult
   storage_names[:default] = "mutation_result"
   property :rowid, Serial
 
-  property :test_id, Integer
+  property :test_id, String
   property :mutation_distance, Integer
   property :mutation_point_id, String
+  property :__tmp_caller_path, String
 
   belongs_to :mutation_point, child_key: [ :mutation_point_id ]
   def point
@@ -84,6 +85,25 @@ class MutationResult
     rescue
       return "not_found"
     end
+  end
+
+  def caller_path
+    __tmp_caller_path
+  end
+
+  def caller_path_source_code
+    caller_path.split("\n").map do |path|
+      components = path.split(':')
+      filename = components.first
+      line = components.last.to_i
+
+      space_count = filename.count(' ')
+      filename.strip!
+
+      code = SourceManager.instance.source_for_file_at_line filename, line
+      pad = " " * space_count
+      "#{pad}#{code.lstrip}"
+    end.join
   end
 
   def stderr

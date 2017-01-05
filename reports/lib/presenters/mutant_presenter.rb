@@ -38,6 +38,10 @@ class MutantPresenter
     @mutation_point.__tmp_caller_path
   end
 
+  def test_names
+    @tests.map(&:test_id).join("\n")
+  end
+
   def source
     begin
     code = SourceManager.instance.source_for_file_at_line @mutation_point.filename, @mutation_point.line_number

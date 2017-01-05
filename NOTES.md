@@ -59,6 +59,10 @@ ninja -t commands ADTTests | grep -v "^:" | sed -e 's/\(-o .*\)\.o/\1.ll/' \
 ninja -t commands ADTTests | grep -v "^:" | sed -e 's/\(-o .*\)\.o/\1.bc/' \
                                               -e 's/\(\/App.*\)$/\1 -emit-llvm/' \
                                               -e 's|/Applications/.*/c++|/opt/clang/bin/clang++|'
+
+ninja -t commands IRTests | grep -v "^:" | sed -e 's/\(-o .*\)\.o/\1.bc/' \
+                                              -e 's/\(\/App.*\)$/\1 -emit-llvm/' \
+                                              -e 's|/Applications/.*/c++|/opt/clang/bin/clang++|'
 ```
 
 ### Evaluate patched commands (human readable LLVM IR)
