@@ -42,6 +42,10 @@ class MutantPresenter
     @tests.map(&:test_id).join("\n")
   end
 
+  def operator
+    @mutation_point.mutation_operator
+  end
+
   def source
     begin
     code = SourceManager.instance.source_for_file_at_line @mutation_point.filename, @mutation_point.line_number

@@ -1,9 +1,15 @@
 require './lib/services/mutant_sorter'
+require './lib/presenters/mutation_operator_presenter'
 
 class ReportPresenter
   def initialize(mutants)
     sorter = MutantSorter.new
     @mutants = sorter.sort(mutants)
+
+    # operator_names = @mutants.map(&:operator).uniq
+    # @operators = operator_names.map do |name|
+    #   MutationOperatorPresenter.new(name)
+    # end
 
     @killed_mutants_count = @mutants.count { |m| m.killed? }
     @survived_mutants_count = @mutants.count { |m| m.survived? }
@@ -29,6 +35,10 @@ class ReportPresenter
 
   def weakly_killed_mutants_count
     @weakly_killed_mutants_count
+  end
+
+  def operators
+    @operators
   end
 
   def mutation_score

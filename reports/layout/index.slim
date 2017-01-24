@@ -5,6 +5,7 @@ html
     link href="css/bootstrap.css" rel='stylesheet' type='text/css'
     link href="css/custom.css" rel='stylesheet' type='text/css'
     link href="js/bootstrap.min.js" rel='script' type='text/javascript'
+    link href="js/jquery.js" rel='script' type='text/javascript'
 
   body
     div.container
@@ -12,10 +13,10 @@ html
 
         h1 Mull Report
 
-        div.list-group id="top"
+        div.summary.list-group id="top"
           div.list-group-item.list-group-item-info
             | Tests:
-            span.label.label-primary.pull-right = ctx.tests_count
+            span.label.label-primary.pull-right data-toggle="tooltip" data-content="huh?" = ctx.tests_count
 
           div.list-group-item.list-group-item-info
             | Mutants:
@@ -71,7 +72,7 @@ html
 
           div.list-group-item
             | Mutation Score:
-            span.label.label-primary.pull-right = "#{ctx.report.mutation_score}%"
+            span.label.label-primary.pull-right = ctx.report.mutation_score
 
         / h3 Results grouped by Mutation Distance
 
@@ -110,7 +111,46 @@ html
         /         | Duration:
         /         span.label.label-primary.pull-right = "#{ctx.duration_at_distance(distance)}"
 
-        h3 Mutation Points
+        h3 Legend
+
+        div.list-group
+          div.summary.list-group
+            div.list-group-item
+              h5 Tests:
+              span
+                | a total amount of tests. Each test can be affected by zero or more mutants.
+            div.list-group-item
+              h5 Mutants:
+              span
+                | a total amount of mutations. Each mutation can be reachable by one or more tests.
+            div.list-group-item
+              h5 Survived Mutants:
+              span
+                | mutants that are not caused any tests to fail.
+            div.list-group-item
+              h5 Killed Mutants:
+              span
+                | mutants that caused one or more tests to fail.
+            div.list-group-item
+              h5 Weakly Killed Mutants:
+              span
+                | mutants that caused at least one test to fail.
+            div.list-group-item
+              h5 Strongly Killed Mutants:
+              span
+                | mutants that caused all tests to fail.
+            div.list-group-item
+              h5 Mutation Score:
+              span
+                | (killed mutants) / (total mutants)
+            div.list-group-item
+              h5 Distance:
+              span
+                | if function A calls function B and function B calls function C,
+                  then C is accessible from A, and the distance between A and C is 2.
+                  Distance is used to control how far we want to go with mutations.
+
+        h3 Mutants
 
         div.list-group
           - for mutant in ctx.report.mutants
@@ -136,7 +176,7 @@ html
                 span.badge = mutant.summary
             div.list-group
               div.list-group-item
-                h4 = "Test Names:"
+                | Affected Tests:
               div.list-group-item.pre
                 div.source-code = mutant.test_names
               div.list-group-item
