@@ -159,3 +159,43 @@ time ./Debug/bin/mutang-driver path/to/local_config.yaml
 
 The debug version will take lots of time so it's recommended to build the driver in Release configuration.
 
+## Local Setup
+
+```
+mkdir -p /usr/local/LLVM
+mkdir -p /usr/local/LLVM/build
+mkdir -p /usr/local/LLVM/mull_cache
+cd /usr/local/LLVM
+git clone http://llvm.org/git/llvm.git
+cd llvm && git checkout 62cfc59ef6c196a7d60e2e56d64d6aa63a2466ce
+cd ../build
+cmake -G Ninja -DLLVM_TARGETS_TO_BUILD="X86" ../llvm/
+ninja llvm-tblgen
+ninja -t commands IRTests | grep -v "^:" | sed -e 's/\(-o .*\)\.o/\1.bc/' \
+    -e 's/\(\/App.*\)$/\1 -emit-llvm -DNDEBUG/' \
+    -e 's|/Applications/.*/c++|/usr/local/opt/llvm/bin/clang++|' \
+    > ir_tests_commands.sh
+```
+
+Now you need to open `ir_tests_commands.sh`, find each command that starts with `cd` and add `cd -` to the next line. It should look like this:
+
+```sh
+cd /usr/local/LLVM/IRTests/include/llvm/IR && /usr/local/LLVM/IRTests/bin/llvm-tblgen -gen-attrs -I /usr/local/LLVM/llvm/include/llvm/IR -I /usr/local/LLVM/llvm/lib/Target -I /usr/local/LLVM/llvm/include /usr/local/LLVM/llvm/include/llvm/IR/Attributes.td -o /usr/local/LLVM/IRTests/include/llvm/IR/Attributes.gen.tmp
+cd -
+```
+
+Now proceed with the following:
+
+```
+sh ir_tests_commands_ll.sh
+echo "fork: true" > config.yaml
+echo "max_distance: 2" >> config.yaml
+echo "dry_run: false" >> config.yaml
+echo "cache_directory: /usr/local/LLVM/mull_cache" >> config.yaml
+echo "" >> config.yaml
+echo "bitcode_files:" >> config.yaml
+find `pwd` -name "*.bc" | sed 's/\(.*\)/  - \1/' >> config.yaml
+```
+And then just run `mull-driver` against `/usr/local/LLVM/IRTests/config.yaml`
+
+
