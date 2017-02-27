@@ -9,7 +9,7 @@ db.mutation_points.createIndex({ 'unique_id' : 1 })
 db.mutation_results.createIndex({ 'mutation_point_id' : 1})
 db.tests.createIndex({ 'test_name' : 1 })
 
-db.mutation_points.aggregate([ 
+db.mutation_points.aggregate([
 	{ $lookup : { from : "mutation_results", localField: "unique_id", foreignField : "mutation_point_id", as : "results" }},
 	{ $unwind : "$results" },
 	{ $lookup : { from : "execution_results", localField: "results.execution_result_id", foreignField : "rowid", as : "results.execution_result" }},
@@ -17,11 +17,11 @@ db.mutation_points.aggregate([
 	{ $lookup : { from : "tests", localField: "results.test_id", foreignField : "test_name", as : "results.test" }},
 	{ $unwind : "$results.test" },
 	{ $lookup : { from : "execution_results", localField: "results.test.execution_result_id", foreignField : "rowid", as : "results.test.execution_result" }},
-	{ $group : { 
-		"_id" : "$_id", 
-		results : { $push : "$results" }, 
+	{ $group : {
+		"_id" : "$_id",
+		results : { $push : "$results" },
 		rowid : { $first : "$rowid" },
-		"mutation_operator" : { $first : "$mutation_operator" }, 
+		"mutation_operator" : { $first : "$mutation_operator" },
 		"module_name" : { $first : "$module_name"},
 		"function_name" : { $first : "$function_name"},
 		"function_index" : { $first : "$function_index"},

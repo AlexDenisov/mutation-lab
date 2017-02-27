@@ -99,10 +99,13 @@ class MutationResult
 
       space_count = filename.count(' ')
       filename.strip!
-
+      begin
       code = SourceManager.instance.source_for_file_at_line filename, line
       pad = " " * space_count
       "#{pad}#{code.lstrip}"
+      rescue
+        "not_found"
+      end
     end.join
   end
 

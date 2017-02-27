@@ -6,6 +6,7 @@ require 'uri'
 require './lib/services/source_manager'
 require './lib/services/mutant_sorter'
 
+require './lib/models/config'
 require './lib/models/execution_result'
 require './lib/models/mutation_point'
 require './lib/models/mutation_point_debug'
@@ -27,8 +28,14 @@ end
 DataMapper.finalize
 
 class Context
-  def initialize(mutants)
+  def initialize(mutants, config)
     @report = ReportPresenter.new(mutants)
+    @config = config
+  end
+
+  def project_name
+    return "" if @config.nil?
+    @config.project_name
   end
 
   def report
@@ -136,7 +143,7 @@ mutants = MutationPoint.all.map { |mp|
   MutantPresenter.new(mp)
 }
 
-ctx = Context.new(mutants)
+ctx = Context.new(mutants, MullConfig.first)
 
 render ctx, "index", report_name
 #render ctx, "debug", "#{report_name}_debug"
